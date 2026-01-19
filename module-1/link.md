@@ -19,3 +19,9 @@ https://medium.com/@hitorunajp/poetry-vs-uv-which-python-package-manager-should-
 
 ## LinkedIn
 
+
+### FAQ
+https://github.com/DataTalksClub/faq/issues/66
+
+### Github
+
