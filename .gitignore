@@ -1,4 +1,7 @@
-#
+# data
+*.csv
+*.csv.gz
+*.parquet
 
 
 # Python

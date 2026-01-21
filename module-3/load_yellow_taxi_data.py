@@ -6,10 +6,10 @@ import time
 
 
 #Change this to your bucket name
-BUCKET_NAME = ""
+BUCKET_NAME = "dezoomcamp-module-4"
 
 #If you authenticated through the GCP SDK you can comment out these two lines
-CREDENTIALS_FILE = ""
+CREDENTIALS_FILE = "../module-4/setup/dezoomcamp-sa.json"
 client = storage.Client.from_service_account_json(CREDENTIALS_FILE)
 
 
