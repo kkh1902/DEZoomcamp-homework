@@ -41,6 +41,7 @@ Complete the quiz shown below. It's a set of 6 multiple-choice questions to test
 - ✅ `green_tripdata_2020-04.csv`
 - `green_tripdata_04_2020.csv`
 - `green_tripdata_2020.csv`
+![alt text](images/question2.png.png)
 
 3) How many rows are there for the `Yellow` Taxi data for all CSV files in the year 2020?
 - 13,537.299
@@ -49,7 +50,9 @@ Complete the quiz shown below. It's a set of 6 multiple-choice questions to test
 - 29,430,127
 
 ```sql
-select count(*) from yellow_tripdata
+select count(*) 
+from yellow_tripdata 
+where filename like 'yellow_tripdata_2020-%';
 ```
 
 4) How many rows are there for the `Green` Taxi data for all CSV files in the year 2020?
@@ -59,7 +62,9 @@ select count(*) from yellow_tripdata
 - 1,342,034
 
 ```sql
-select count(*) from green_tripdata
+select count(*) 
+from green_tripdata 
+where filename like 'green_tripdata_2020-%';
 ```
 
 
@@ -69,12 +74,18 @@ select count(*) from green_tripdata
 - ✅ 1,925,152
 - 2,561,031
 
+```sql
+SELECT count(*) 
+FROM yellow_tripdata
+WHERE filename like 'yellow_tripdata_2021-03%';
+```
+
 6) How would you configure the timezone to New York in a Schedule trigger?
 - Add a `timezone` property set to `EST` in the `Schedule` trigger configuration  
 - ✅ Add a `timezone` property set to `America/New_York` in the `Schedule` trigger configuration
 - Add a `timezone` property set to `UTC-5` in the `Schedule` trigger configuration
 - Add a `location` property set to `New_York` in the `Schedule` trigger configuration  
-
+![alt text](images/question6.png)
 ## Submitting the solutions
 
 * Form for submitting: https://courses.datatalks.club/de-zoomcamp-2026/homework/hw2
