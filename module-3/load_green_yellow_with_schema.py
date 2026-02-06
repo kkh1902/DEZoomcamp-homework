@@ -15,7 +15,7 @@ CREDENTIALS_FILE = "/home/pc/dev/homework/module-4/setup/dezoomcamp-sa.json"
 storage_client = storage.Client.from_service_account_json(CREDENTIALS_FILE)
 bucket = storage_client.bucket(BUCKET_NAME)
 
-# Green Taxi 스키마 정의
+# Green Taxi schema definition
 green_schema = pa.schema([
     ('VendorID', pa.int64()),
     ('lpep_pickup_datetime', pa.timestamp('us')),
@@ -39,7 +39,7 @@ green_schema = pa.schema([
     ('congestion_surcharge', pa.float64())
 ])
 
-# Yellow Taxi 스키마 정의
+# Yellow Taxi schema definition
 yellow_schema = pa.schema([
     ('VendorID', pa.int64()),
     ('tpep_pickup_datetime', pa.timestamp('us')),
@@ -63,17 +63,17 @@ yellow_schema = pa.schema([
 
 def process_taxi_data(service_type, years, schema, datetime_cols):
     """
-    Taxi 데이터 다운로드 및 GCS 업로드
+    Download taxi data and upload to GCS
 
     Args:
         service_type: 'green' or 'yellow'
         years: [2019, 2020]
         schema: PyArrow schema
-        datetime_cols: datetime으로 파싱할 컬럼 리스트
+        datetime_cols: list of columns to parse as datetime
     """
     for year in years:
         for month in range(1, 13):
-            # 파일명 설정
+            # File name setup
             csv_file = f'{service_type}_tripdata_{year}-{month:02d}.csv.gz'
             parquet_file = f'{service_type}_tripdata_{year}-{month:02d}.parquet'
             url = f'https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{service_type}/{csv_file}'
@@ -83,24 +83,24 @@ def process_taxi_data(service_type, years, schema, datetime_cols):
                 df = pd.read_csv(url, compression='gzip', parse_dates=datetime_cols)
                 print(f'Downloaded {len(df):,} records')
 
-                # PyArrow Table로 변환 (명시적 스키마 적용)
+                # Convert to PyArrow Table (apply explicit schema)
                 table = pa.Table.from_pandas(df, schema=schema, preserve_index=False)
 
-                # 로컬에 parquet으로 저장 (coerce_timestamps 적용)
+                # Save to local parquet (apply coerce_timestamps)
                 pq.write_table(
                     table,
                     parquet_file,
-                    coerce_timestamps='us',  # microseconds로 변환
+                    coerce_timestamps='us',  # convert to microseconds
                     compression='snappy'
                 )
                 print(f'Saved to local: {parquet_file}')
 
-                # GCS에 업로드
+                # Upload to GCS
                 blob = bucket.blob(f'{service_type}/{parquet_file}')
                 blob.upload_from_filename(parquet_file)
                 print(f'Uploaded to GCS: gs://{BUCKET_NAME}/{service_type}/{parquet_file}')
 
-                # 로컬 파일 삭제
+                # Delete local file
                 os.remove(parquet_file)
                 print(f'Cleaned up local file\n')
             except Exception as e:
@@ -110,10 +110,10 @@ def process_taxi_data(service_type, years, schema, datetime_cols):
     print(f'All {service_type} taxi data uploaded to gs://{BUCKET_NAME}/{service_type}/\n')
 
 def create_bigquery_tables(service_type, table_name):
-    """BigQuery External 및 Native Table 생성"""
+    """Create BigQuery External and Native tables"""
     bq_client = bigquery.Client.from_service_account_json(CREDENTIALS_FILE)
 
-    # External Table 생성
+    # Create external table
     print(f'Creating BigQuery External Table for {service_type}...')
     external_table_id = f"{PROJECT_ID}.{DATASET_NAME}.{table_name}_external"
     source_uris = [f'gs://{BUCKET_NAME}/{service_type}/*.parquet']
@@ -131,7 +131,7 @@ def create_bigquery_tables(service_type, table_name):
     except Exception as e:
         print(f'Error creating external table: {e}')
 
-    # Native Table 생성
+    # Create native table
     print(f'Creating BigQuery Native Table for {service_type}...')
     native_table_id = f"{PROJECT_ID}.{DATASET_NAME}.{table_name}"
     query = f"""
@@ -144,7 +144,7 @@ def create_bigquery_tables(service_type, table_name):
         query_job.result()
         print(f'Created native table: {native_table_id}')
 
-        # 레코드 수 확인
+        # Confirm record count
         count_query = f"SELECT COUNT(*) as cnt FROM `{native_table_id}`"
         count_result = bq_client.query(count_query).result()
         for row in count_result:
@@ -153,7 +153,7 @@ def create_bigquery_tables(service_type, table_name):
         print(f'Error creating native table: {e}\n')
 
 if __name__ == "__main__":
-    # Green Taxi 처리 (2019, 2020)
+    # Process Green Taxi (2019, 2020)
     print("="*60)
     print("Processing Green Taxi Data")
     print("="*60)
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     )
     create_bigquery_tables('green', 'green_tripdata')
 
-    # Yellow Taxi 처리 (2019, 2020)
+    # Process Yellow Taxi (2019, 2020)
     print("="*60)
     print("Processing Yellow Taxi Data")
     print("="*60)
