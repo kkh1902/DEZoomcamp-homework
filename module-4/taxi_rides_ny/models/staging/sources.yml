@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw_nyc_tripdata
+    database: "{{ env_var('DBT_BIGQUERY_PROJECT', 'dtc_zoomcamp_2025') }}"
+    schema:   "{{ env_var('DBT_BIGQUERY_SOURCE_DATASET', 'raw_nyc_tripdata') }}"
+    tables:
+      - name: ext_green_taxi
+      - name: ext_yellow_taxi

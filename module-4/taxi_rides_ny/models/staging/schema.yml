@@ -25,9 +25,11 @@ models:
             description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
             tests:
                 - unique:
-                    severity: warn
+                    config:
+                      severity: warn
                 - not_null:
-                    severity: warn
+                    config:
+                      severity: warn
           - name: VendorID 
             description: > 
                 A code indicating the TPEP provider that provided the record.
@@ -45,15 +47,18 @@ models:
             description: locationid where the meter was engaged.
             tests:
               - relationships:
-                  to: ref('taxi_zone_lookup')
-                  field: locationid
-                  severity: warn
+                  arguments:
+                    to: ref('taxi_zone_lookup')
+                    field: locationid
+                  config:
+                    severity: warn
           - name: dropoff_locationid 
             description: locationid where the meter was engaged.
             tests:
               - relationships:
-                  to: ref('taxi_zone_lookup')
-                  field: locationid
+                  arguments:
+                    to: ref('taxi_zone_lookup')
+                    field: locationid
           - name: RateCodeID 
             description: >
                 The final rate code in effect at the end of the trip.
@@ -79,9 +84,11 @@ models:
               A numeric code signifying how the passenger paid for the trip.
             tests: 
               - accepted_values:
-                  values: "{{ var('payment_type_values') }}"
-                  severity: warn
-                  quote: false
+                  arguments:
+                    values: "{{ var('payment_type_values') }}"
+                    quote: false
+                  config:
+                    severity: warn
           - name: payment_type_description
             description: Description of the payment_type code
           - name: Fare_amount 
@@ -116,9 +123,11 @@ models:
             description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
             tests:
                 - unique:
-                    severity: warn
+                    config:
+                      severity: warn
                 - not_null:
-                    severity: warn
+                    config:
+                      severity: warn
           - name: VendorID 
             description: > 
                 A code indicating the TPEP provider that provided the record.
@@ -136,16 +145,20 @@ models:
             description: locationid where the meter was engaged.
             tests:
               - relationships:
-                  to: ref('taxi_zone_lookup')
-                  field: locationid
-                  severity: warn
+                  arguments:
+                    to: ref('taxi_zone_lookup')
+                    field: locationid
+                  config:
+                    severity: warn
           - name: dropoff_locationid 
             description: locationid where the meter was engaged.
             tests:
               - relationships:
-                  to: ref('taxi_zone_lookup')
-                  field: locationid
-                  severity: warn
+                  arguments:
+                    to: ref('taxi_zone_lookup')
+                    field: locationid
+                  config:
+                    severity: warn
           - name: RateCodeID 
             description: >
                 The final rate code in effect at the end of the trip.
@@ -171,9 +184,11 @@ models:
               A numeric code signifying how the passenger paid for the trip.
             tests: 
               - accepted_values:
-                  values: "{{ var('payment_type_values') }}"
-                  severity: warn
-                  quote: false
+                  arguments:
+                    values: "{{ var('payment_type_values') }}"
+                    quote: false
+                  config:
+                    severity: warn
           - name: payment_type_description
             description: Description of the payment_type code
           - name: Fare_amount 
