@@ -50,6 +50,9 @@ from {{ source('raw_nyc_tripdata', 'ext_green_taxi' ) }}
 - `select * from myproject.my_nyc_tripdata.ext_green_taxi`
 - `select * from dtc_zoomcamp_2025.raw_nyc_tripdata.green_taxi`
 
+![alt text](image-1.png)
+Reason: the model reads DBT_BIGQUERY_SOURCE_DATASET, not DBT_BIGQUERY_DATASET, so the dataset falls back to the default raw_nyc_tripdata.
+
 
 ### Question 2: dbt Variables & Dynamic Models
 
