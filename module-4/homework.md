@@ -91,7 +91,7 @@ Select the option that does **NOT** apply for materializing `fct_taxi_monthly_zo
 - `dbt run --select +models/core/fct_taxi_monthly_zone_revenue.sql`
 - `dbt run --select +models/core/`
 - ✅`dbt run --select models/staging/+`
-
+![alt text](image-2.png)
 
 ### Question 4: dbt Macros and Jinja
 
@@ -159,6 +159,60 @@ Considering the YoY Growth in 2020, which were the yearly quarters with the best
 - green: ✅ {best: 2020/Q1, worst: 2020/Q2}, yellow: {best: 2020/Q1, worst: 2020/Q2}
 - green: {best: 2020/Q1, worst: 2020/Q2}, yellow: {best: 2020/Q3, worst: 2020/Q4}
 
+```sql
+{{
+    config(
+        materialized = 'table'
+    )
+}}
+
+with quarter_revenue as (
+    SELECT
+        'yellow' AS service_type,
+        EXTRACT(YEAR FROM pickup_datetime) as year,
+        EXTRACT(QUARTER FROM pickup_datetime) as quarter,
+        CONCAT(EXTRACT(YEAR FROM pickup_datetime), '/Q' ,EXTRACT(QUARTER FROM pickup_datetime)) AS year_quarter,
+        SUM(total_amount) as revenue
+    FROM {{ ref('fact_trips') }}
+    WHERE total_amount> 0
+    GROUP BY 1,2,3,4
+
+    UNION ALL
+
+    SELECT
+        'green' AS service_type,
+        EXTRACT(YEAR FROM pickup_datetime) as year,
+        EXTRACT(QUARTER FROM pickup_datetime) as quarter,
+        CONCAT(EXTRACT(YEAR FROM pickup_datetime), '/Q' ,EXTRACT(QUARTER FROM pickup_datetime)) AS year_quarter,
+        SUM(total_amount) as revenue
+    FROM {{ ref('fact_trips') }}
+    WHERE total_amount> 0
+    GROUP BY 1,2,3,4 
+),
+revenue_with_growth AS (
+
+    SELECT
+        q1.service_type,
+        q1.year,
+        q1.quarter,
+        q1.year_quarter,
+        q1.revenue as current_revenue,
+        q2.revenue as previous_revenue,
+        ROUND((q1.revenue-q2.revenue)/ q2.revenue * 100 , 2) AS yoy_growth
+    FROM quarter_revenue q1
+    LEFT JOIN quarter_revenue q2 
+        ON  q1.service_type = q2.service_type
+        AND q1.year = q2.year + 1
+        AND q1.quarter  = q2.quarter
+)
+
+SELECT *
+FROM revenue_with_growth
+ORDER BY service_type,year,quarter
+```
+
+![alt text](image-3.png)
+
 
 ### Question 6: P97/P95/P90 Taxi Monthly Fare
 
@@ -173,7 +227,59 @@ Now, what are the values of `p97`, `p95`, `p90` for Green Taxi and Yellow Taxi, 
 - green: {p97: 40.0, p95: 33.0, p90: 24.5}, yellow: {p97: 52.0, p95: 37.0, p90: 25.5}
 - green: {p97: 40.0, p95: 33.0, p90: 24.5}, yellow: {p97: 31.5, p95: 25.5, p90: 19.0}
 - green: {p97: 55.0, p95: 45.0, p90: 26.5}, yellow: {p97: 52.0, p95: 25.5, p90: 19.0}
-![qustion 6](image.png)
+
+```sql
+{{ config(
+    materialized = 'table'
+) }}
+
+WITH valid_trips AS (
+
+    SELECT
+        'yellow' AS service_type,
+        EXTRACT(YEAR  FROM pickup_datetime) AS year,
+        EXTRACT(MONTH FROM pickup_datetime) AS month,
+        fare_amount
+    FROM {{ ref('fact_trips') }}
+    WHERE
+        service_type = 'Yellow'
+        AND fare_amount > 0
+        AND trip_distance > 0
+        AND payment_type IN (1, 2)
+
+    UNION ALL
+
+    SELECT
+        'green' AS service_type,
+        EXTRACT(YEAR FROM pickup_datetime) AS year,
+        EXTRACT(MONTH FROM pickup_datetime) AS month,
+        fare_amount
+    FROM {{ ref('fact_trips') }}
+    WHERE
+        service_type = 'Green'
+        AND fare_amount > 0
+        AND trip_distance > 0
+        AND payment_type IN (1, 2)
+),
+percentiles AS(
+    SELECT 
+        service_type,
+        year,
+        month,
+        PERCENTILE_CONT(fare_amount, 0.97)
+            OVER (PARTITION BY service_type, year, month) AS p97,
+        PERCENTILE_CONT(fare_amount, 0.95)
+            OVER (PARTITION BY service_type, year, month) AS p95,
+        PERCENTILE_CONT(fare_amount, 0.90)
+            OVER (PARTITION BY service_type, year, month) AS p90
+    FROM valid_trips 
+)
+
+SELECT *
+FROM percentiles 
+WHERE year = 2020 and month =4
+```
+![alt text](image-4.png)
 
 
 ### Question 7: Top #Nth longest P90 travel time Location for FHV
@@ -196,6 +302,63 @@ For the Trips that **respectively** started from `Newark Airport`, `SoHo`, and `
 - LaGuardia Airport, Rosedale, Bath Beach
 - LaGuardia Airport, Yorkville East, Greenpoint
 
+```sql
+{{ config(materialized='table') }}
+
+WITH trip_duration AS (
+    SELECT
+        EXTRACT(YEAR FROM pickup_datetime) AS year,
+        EXTRACT(MONTH FROM pickup_datetime) AS month,
+        pickup_location_id,
+        dropoff_location_id,
+        TIMESTAMP_DIFF(dropoff_datetime, pickup_datetime, SECOND) AS trip_seconds
+    FROM {{ ref('stg_fhv_tripdata') }}
+    WHERE EXTRACT(YEAR FROM pickup_datetime) = 2019
+        AND EXTRACT(MONTH FROM pickup_datetime) = 11
+        AND pickup_datetime IS NOT NULL
+        AND dropoff_datetime IS NOT NULL
+        AND dropoff_datetime > pickup_datetime
+),
+p90 AS (
+    SELECT DISTINCT
+        year, month, pickup_location_id, dropoff_location_id,
+        PERCENTILE_CONT(trip_seconds, 0.9)
+            OVER (PARTITION BY year, month, pickup_location_id, dropoff_location_id) AS p90_trip_duration
+    FROM trip_duration
+),
+zone_p90 AS (
+    SELECT
+        p90.year,
+        p90.month,
+        p90.pickup_location_id,
+        p90.dropoff_location_id,
+        TRIM(z_pu.zone) AS pickup_zone,
+        TRIM(z_do.zone) AS dropoff_zone,
+        p90.p90_trip_duration
+    FROM p90
+    INNER JOIN {{ ref('dim_zones') }} z_pu
+        ON p90.pickup_location_id = z_pu.locationid
+    INNER JOIN {{ ref('dim_zones') }} z_do
+        ON p90.dropoff_location_id = z_do.locationid
+    WHERE TRIM(z_pu.zone) IN ('Newark Airport', 'SoHo', 'Yorkville East')
+        AND z_do.borough IS NOT NULL
+        AND TRIM(z_do.zone) NOT IN ('NV', 'Unknown')
+),
+ranked_trips AS (
+    SELECT
+        pickup_zone,
+        dropoff_zone,
+        p90_trip_duration,
+        RANK() OVER (PARTITION BY pickup_zone ORDER BY p90_trip_duration DESC) AS rank
+    FROM zone_p90
+)
+SELECT pickup_zone, dropoff_zone, p90_trip_duration
+FROM ranked_trips
+WHERE rank = 2
+ORDER BY pickup_zone
+
+```
+![alt text](image-5.png)
 
 ## Submitting the solutions
 
