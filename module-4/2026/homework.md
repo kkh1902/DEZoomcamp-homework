@@ -76,11 +76,11 @@ What is the count of records in the `fct_monthly_zone_revenue` model?
 - ✅ 12,184
 - 15,421
 
----
 ```sql
 SELECT COUNT(*) AS cnt
   FROM `dezoomcamp-483523.prod.fct_monthly_zone_revenue`;
 ```
+---
 
 ### Question 4. Best Performing Zone for Green Taxis (2020)
 
