@@ -34,9 +34,9 @@ If you run `dbt run --select int_trips_unioned`, what models will be built?
 - `int_trips_unioned` only
 - `int_trips_unioned`, `int_trips`, and `fct_trips` (downstream dependencies)
 
----
-![alt text](image.png)
 
+![alt text](image.png)
+---
 
 ### Question 2. dbt Tests
 
@@ -61,9 +61,9 @@ What happens when you run `dbt test --select fct_trips`?
 - dbt will pass the test with a warning about the new value
 - dbt will update the configuration to include the new value
 
----
 ![alt text](image-1.png)
 ![alt text](image-2.png)
+---
 
 ### Question 3. Counting Records in `fct_monthly_zone_revenue`
 
@@ -93,7 +93,7 @@ Which zone had the highest revenue?
 - East Harlem South
 - Washington Heights South
 
----
+
 ```sql
 SELECT
     pickup_zone,
@@ -105,6 +105,7 @@ GROUP BY 1
 ORDER BY 2 DESC
 LIMIT 1;
 ```
+---
 
 ### Question 5. Green Taxi Trip Counts (October 2019)
 
