@@ -123,3 +123,22 @@ upstream/downstream 범위를 유연하게 제어할 수 있었습니다.
 재현성, 테스트, 운영 관점으로 계속 학습해보겠습니다.
 
 #LearningInPublic #DataEngineeringZoomcamp #dbt #AnalyticsEngineering
+
+---
+
+## 8) English Version - Module 4 Wrap-up
+🚀 Completed Module 4 of Data Engineering Zoomcamp: Analytics Engineering with dbt
+
+This week, I worked on transforming NYC Taxi raw data into analytics-ready models using dbt.
+
+What I learned:
+- How to structure models across `staging`, `intermediate`, and `marts`
+- How to use `ref()` for dependency management and lineage
+- The difference between `dbt run`, `dbt test`, and `dbt build`
+- How generic tests (`not_null`, `unique`, `accepted_values`) catch data quality issues early
+- How to build a monthly revenue mart for zone-level analysis
+
+Big takeaway:
+Analytics engineering is not just writing SQL. It is about building reliable, testable, and maintainable data transformation systems.
+
+#DataEngineering #dbt #AnalyticsEngineering #ELT #BigQuery #LearningInPublic
