@@ -18,7 +18,7 @@ After completing the setup, you should have a working NYC taxi data pipeline.
 In a Bruin project, what are the required files/directories?
 
 - `bruin.yml` and `assets/`
-- `.bruin.yml` and `pipeline.yml` (assets can be anywhere)
+- ✅`.bruin.yml` and `pipeline.yml` (assets can be anywhere)
 - `.bruin.yml` and `pipeline/` with `pipeline.yml` and `assets/`
 - `pipeline.yml` and `assets/` only
 
@@ -30,7 +30,7 @@ You're building a pipeline that processes NYC taxi data organized by month based
 
 - `append` - always add new rows
 - `replace` - truncate and rebuild entirely
-- `time_interval` - incremental based on a time column
+- ✅ `time_interval` - incremental based on a time column
 - `view` - create a virtual table only
 
 ---
@@ -41,18 +41,18 @@ You have the following variable defined in `pipeline.yml`:
 
 ```yaml
 variables:
-  taxi_types:
-    type: array
-    items:
-      type: string
-    default: ["yellow", "green"]
+    taxi_types:
+        type: array
+        items:
+            type: string
+        default: ["yellow", "green"]
 ```
 
 How do you override this when running the pipeline to only process yellow taxis?
 
 - `bruin run --taxi-types yellow`
 - `bruin run --var taxi_types=yellow`
-- `bruin run --var 'taxi_types=["yellow"]'`
+- ✅ `bruin run --var 'taxi_types=["yellow"]'`
 - `bruin run --set taxi_types=["yellow"]`
 
 ---
@@ -62,7 +62,7 @@ How do you override this when running the pipeline to only process yellow taxis?
 You've modified the `ingestion/trips.py` asset and want to run it plus all downstream assets. Which command should you use?
 
 - `bruin run ingestion.trips --all`
-- `bruin run ingestion/trips.py --downstream`
+- ✅ `bruin run ingestion/trips.py --downstream`
 - `bruin run pipeline/trips.py --recursive`
 - `bruin run --select ingestion.trips+`
 
@@ -73,7 +73,7 @@ You've modified the `ingestion/trips.py` asset and want to run it plus all downs
 You want to ensure the `pickup_datetime` column in your trips table never has NULL values. Which quality check should you add to your asset definition?
 
 - `unique: true`
-- `not_null: true`
+- ✅ `not_null: true`
 - `positive: true`
 - `accepted_values: [not_null]`
 
@@ -85,7 +85,7 @@ After building your pipeline, you want to visualize the dependency graph between
 
 - `bruin graph`
 - `bruin dependencies`
-- `bruin lineage`
+- ✅ `bruin lineage`
 - `bruin show`
 
 ---
@@ -96,7 +96,7 @@ You're running a Bruin pipeline for the first time on a new DuckDB database. Wha
 
 - `--create`
 - `--init`
-- `--full-refresh`
+- ✅ `--full-refresh`
 - `--truncate`
 
 ---
