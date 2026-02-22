@@ -88,3 +88,5 @@ htmlcov/
 dmypy.json
 
 .bruin.yml
+logs/runs
+logs/*.log
