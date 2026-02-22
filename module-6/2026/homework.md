@@ -65,6 +65,10 @@ What is the length of the longest trip in the dataset in hours?
 - ✅ 90.6
 - 134.5
 
+```sql
+SELECT MAX(timestampdiff(SECOND, tpep_pickup_datetime, tpep_dropoff_datetime) / 3600.0) AS max_trip_hours
+FROM trips
+```
 ![alt text](image-1.png)
 
 
@@ -96,6 +100,14 @@ Using the zone lookup data and the Yellow November 2025 data, what is the name o
 - Rikers Island
 - Jamaica Bay
 
+```sql
+SELECT zones.Zone, COUNT(*) as trip_count
+FROM trips
+JOIN zones ON trips.PULocationID = zones.LocationID
+GROUP BY zones.Zone
+ORDER BY trip_count ASC
+LIMIT 1
+```
 ```
 Least Frequent Pickup Location Zone: Governor's Island/Ellis Island/Liberty Island
 ```
