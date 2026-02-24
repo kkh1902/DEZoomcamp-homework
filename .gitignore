@@ -90,3 +90,6 @@ dmypy.json
 .bruin.yml
 logs/runs
 logs/*.log
+
+*.crc
+_SUCCESS
