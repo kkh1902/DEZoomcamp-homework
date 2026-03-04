@@ -179,7 +179,7 @@ took = t1 - t0
 
 How much time did it take to send the entire dataset and flush? 
 
-![alt text](assets/image4.png)
+![alt text](./assets/image4.png)
 
 
 ## Question 5: Build a Sessionization Window (2 points)
@@ -192,6 +192,7 @@ Now we have the data in the Kafka stream. It's time to process it.
 * Use `lpep_dropoff_datetime` time as your watermark with a 5 second tolerance
 * Which pickup and drop off locations have the longest unbroken streak of taxi trips?
 
+![question5](./assets/question5.png)
 
 ## Submitting the solutions
 
