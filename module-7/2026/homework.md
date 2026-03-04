@@ -72,6 +72,7 @@ Find out what you need to execute based on the `help` output.
 
 What's the version, based on the output of the command you executed? (copy the entire version)
 
+![question1](./assets/question1.png)
 
 ## Question 2. Creating a topic
 
@@ -83,6 +84,8 @@ redpandas.
 Read the output of `help` and based on it, create a topic with name `green-trips` 
 
 What's the output of the command for creating a topic? Include the entire output in your answer.
+
+![quesion2](./assets/question2.png)
 
 
 ## Question 3. Connecting to the Kafka server
@@ -122,6 +125,8 @@ producer.bootstrap_connected()
 
 Provided that you can connect to the server, what's the output
 of the last command?
+
+![question3](./assets/question3.png)
 
 ## Question 4: Sending the Trip Data
 
@@ -167,6 +172,8 @@ took = t1 - t0
 
 How much time did it take to send the entire dataset and flush? 
 
+![question4](./assets/question4.png)
+
 
 ## Question 5: Build a Sessionization Window (2 points)
 
@@ -177,6 +184,11 @@ Now we have the data in the Kafka stream. It's time to process it.
 * Use a [session window](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/datastream/operators/windows/) with a gap of 5 minutes
 * Use `lpep_dropoff_datetime` time as your watermark with a 5 second tolerance
 * Which pickup and drop off locations have the longest unbroken streak of taxi trips?
+
+- PU = 74 (East Harlem North)
+- DO = 75 (East Harlem South)
+- duration_sec = 4232 (the longest session)
+![question5](./assets/question5.png)
 
 
 ## Submitting the solutions
